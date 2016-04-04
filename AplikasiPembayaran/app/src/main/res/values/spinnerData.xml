@@ -1,0 +1,6 @@
+ <resources>
+    <string-array name="providers">
+        <item>PLN</item>
+        <item>PDAM</item>
+    </string-array>
+ </resources>
