@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.artivisi.android.aplikasipembayaran.CekTagihanActivity">
+    tools:context="com.artivisi.android.aplikasipembayaran.CekTagihanActivity"
+    tools:showIn="@layout/content_cek_tagihan">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
