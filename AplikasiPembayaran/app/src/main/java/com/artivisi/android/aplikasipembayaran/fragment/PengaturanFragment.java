@@ -50,6 +50,13 @@ public class PengaturanFragment extends Fragment {
 
         int idx = radioGroup.indexOfChild(rbSelected);
         rbSelected = (RadioButton) radioGroup.getChildAt(idx);
+        etNoHp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("edit text was", "clicked");
+            }
+        });
+
         btnSimpan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +70,6 @@ public class PengaturanFragment extends Fragment {
                 Log.i("No Hp ", etNoHp.getText().toString());
             }
         });
-
 
         return rootView;
     }
