@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.artivisi.android.aplikasipembayaran.dto.GenericResponse;
 import com.artivisi.android.aplikasipembayaran.exception.GagalLoginException;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
+import com.artivisi.android.aplikasipembayaran.service.GcmRegistrationIntentService;
 
 import org.springframework.web.client.ResourceAccessException;
 
@@ -83,6 +84,9 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
+        startService(intent);
     }
 
     private void login(String username, String password){

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class GenericResponse {
 	private Boolean success;
-	private Map<String, Object> data;
+	private Map<String, Object> data = new HashMap<>();
 
 	public Boolean isSuccess(){
 		return success;
