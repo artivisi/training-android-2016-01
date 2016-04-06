@@ -22,14 +22,14 @@ public class SecondActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String valueProduk = intent.getStringExtra("produk");
-        String valueNomor = intent.getStringExtra("nomor");
+        String nama = intent.getStringExtra("nama");
+        String email = intent.getStringExtra("email");
 
         tvJenisTagihan = (TextView) findViewById(R.id.jenisTag);
-        tvJenisTagihan.setText(valueProduk);
+        tvJenisTagihan.setText(nama);
 
         tvDetailNoPel = (TextView) findViewById(R.id.detailNoPel);
-        tvDetailNoPel.setText(valueNomor);
+        tvDetailNoPel.setText(email);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.artivisi.android.aplikasipembayaran;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,9 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.artivisi.android.aplikasipembayaran.dto.GenericResponse;
+import com.artivisi.android.aplikasipembayaran.exception.GagalLoginException;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
+
+import org.springframework.web.client.ResourceAccessException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -74,14 +79,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
-
                 login(username, password);
 
-                Intent intent = new Intent(LoginActivity.this, SecondActivity.class);
-                intent.putExtra("nama", username);
-                intent.putExtra("password", password);
-
-                startActivity(intent);
             }
         });
     }
@@ -90,20 +89,68 @@ public class LoginActivity extends AppCompatActivity {
 
         new AsyncTask<String, Void, GenericResponse>(){
 
+            ProgressDialog progressDialog;
+            String pesanError;
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog = ProgressDialog.show(LoginActivity.this,
+                        "Logging in",
+                        "mengecek username dan password",
+                        true);
+            }
+
             @Override
             protected GenericResponse doInBackground(String... params) {
                 PembayaranRestClient client = new PembayaranRestClient();
-                GenericResponse hasil = client.login(params[0], params[1]);
-                Log.i(tag, "Sukses : "+hasil.isSuccess());
-                if(hasil.isSuccess()){
-                    Log.i(tag, "Email : "+hasil.getData().get("email"));
-                } else {
-                    Log.i(tag, "Error : "+hasil.getData().get("errormessage"));
+
+                try {
+                    GenericResponse hasil = client.login(params[0], params[1]);
+                    Log.i(tag, "Sukses : " + hasil.isSuccess());
+                    if (hasil.isSuccess()) {
+                        Log.i(tag, "Email : " + hasil.getData().get("email"));
+                    } else {
+                        Log.i(tag, "Error : " + hasil.getData().get("errormessage"));
+                    }
+                    return hasil;
+
+                } catch (GagalLoginException err){
+                    Log.i(tag, "Koneksi ke server gagal");
+                    pesanError = err.getMessage();
+                    return null;
                 }
-                return hasil;
+
             }
 
+            @Override
+            protected void onPostExecute(GenericResponse genericResponse) {
 
+                progressDialog.dismiss();
+
+                if(genericResponse == null){
+                    Toast.makeText(LoginActivity.this,
+                            pesanError,
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                if(genericResponse.isSuccess()){
+                    Intent intent = new Intent(LoginActivity.this, SecondActivity.class);
+                    intent.putExtra("nama", genericResponse.getData().get("fullname").toString());
+                    intent.putExtra("email", genericResponse.getData().get("email").toString());
+
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(LoginActivity.this,
+                            genericResponse.getData()
+                                    .get("errormessage").toString(),
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+
+
+            }
         }.execute(username, password);
 
     }
