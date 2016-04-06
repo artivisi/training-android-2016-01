@@ -52,10 +52,17 @@
 
         <service android:name=".service.GcmRegistrationIntentService" android:exported="false">
         </service>
+
+        <service android:name=".service.MyGcmListenerService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.c2dm.permission.SEND"/>
 
     <permission android:name="com.artivisi.android.aplikasipembayaran.permission.C2D_MESSAGE"/>
