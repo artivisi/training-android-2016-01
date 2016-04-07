@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -145,6 +146,24 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 if(genericResponse.isSuccess()){
+                    SharedPreferences sp =
+                            getSharedPreferences(getString(R.string.sp_key),
+                                    Context.MODE_PRIVATE);
+
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(getString(R.string.sp_key_username), "jimmy");
+                    editor.commit();
+                    Log.i(tag, "writing to shared preference");
+
+                    String usernameSP = sp.getString("password", "tidak ada value");
+                    Log.i(tag, "username " + usernameSP);
+
+                    SharedPreferences.Editor editor1 = sp.edit();
+                    editor1.remove(getString(R.string.sp_key_username));
+                    // atau hapus semua
+                    editor1.clear();
+                    editor1.commit();
+
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(LoginActivity.this)
                                     .setSmallIcon(android.R.drawable.ic_dialog_info)
