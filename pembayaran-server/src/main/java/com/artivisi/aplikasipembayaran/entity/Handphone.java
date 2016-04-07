@@ -29,4 +29,19 @@ public class Handphone extends BaseEntity {
     @Column(name = "gcm_token", nullable = false)
     private String gcmToken;
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getGcmToken() {
+        return gcmToken;
+    }
+
+    public void setGcmToken(String gcmToken) {
+        this.gcmToken = gcmToken;
+    }
 }

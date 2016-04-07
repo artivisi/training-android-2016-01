@@ -23,4 +23,20 @@ public class BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "terakhir_update", nullable = false)
     private Date terakhirUpdate = new Date();
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getTerakhirUpdate() {
+        return terakhirUpdate;
+    }
+
+    public void setTerakhirUpdate(Date terakhirUpdate) {
+        this.terakhirUpdate = terakhirUpdate;
+    }
 }

@@ -61,5 +61,70 @@ public class Tagihan extends BaseEntity {
     @NotNull
     @Min(0)
     @Column(nullable = false)
+
     private BigDecimal pajak = BigDecimal.ZERO;
+
+    public BigDecimal getPajak() {
+        return pajak;
+    }
+
+    public void setPajak(BigDecimal pajak) {
+        this.pajak = pajak;
+    }
+
+    public BigDecimal getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(BigDecimal admin) {
+        this.admin = admin;
+    }
+
+    public BigDecimal getDenda() {
+        return denda;
+    }
+
+    public void setDenda(BigDecimal denda) {
+        this.denda = denda;
+    }
+
+    public BigDecimal getTagihan() {
+        return tagihan;
+    }
+
+    public void setTagihan(BigDecimal tagihan) {
+        this.tagihan = tagihan;
+    }
+
+    public Date getJatuhTempo() {
+        return jatuhTempo;
+    }
+
+    public void setJatuhTempo(Date jatuhTempo) {
+        this.jatuhTempo = jatuhTempo;
+    }
+
+    public Date getPeriodeTagihan() {
+        return periodeTagihan;
+    }
+
+    public void setPeriodeTagihan(Date periodeTagihan) {
+        this.periodeTagihan = periodeTagihan;
+    }
+
+    public Produk getProduk() {
+        return produk;
+    }
+
+    public void setProduk(Produk produk) {
+        this.produk = produk;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
