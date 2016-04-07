@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,6 +28,16 @@ import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
 import com.artivisi.android.aplikasipembayaran.service.GcmRegistrationIntentService;
 
 import org.springframework.web.client.ResourceAccessException;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -86,13 +98,67 @@ public class LoginActivity extends AppCompatActivity {
 
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
-                login(username, password);
+//                login(username, password);
+
+                try {
+                    FileOutputStream fos = openFileOutput("halo.txt", Context.MODE_PRIVATE);
+                    Log.i("writing files : ", "halo.txt");
+                    fos.write("ini dari aplikasi pembayaran".getBytes());
+                    fos.close();
+
+                    //cara baca file internal storage
+                    FileInputStream fis = openFileInput("halo.txt");
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                    String strLine;
+                    while ((strLine = br.readLine()) != null) {
+                        Log.i("reading file : ", strLine);
+                    }
+                    fis.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //write to external storage
+                File file = new File(getExternalFilesDir(""),
+                        "aplikasiPembayaran.txt");
+                try {
+                    if (!file.createNewFile()) {
+                        Log.e("error", "Directory not created");
+                        FileOutputStream f = new FileOutputStream(file);
+                        f.write("Halo".getBytes());
+                        f.flush();
+                        f.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         });
 
         Intent intent = new Intent(this, GcmRegistrationIntentService.class);
         startService(intent);
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
     private void login(String username, String password){
