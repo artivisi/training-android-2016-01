@@ -69,13 +69,15 @@ ALTER TABLE m_user_password OWNER TO pembayaran;
 
 CREATE TABLE t_gcm_outgoing_message (
     id character varying(255) NOT NULL,
+    terakhir_update timestamp without time zone NOT NULL,
     collapse_key character varying(255),
     data character varying(255),
     gcm_id character varying(255),
     notification character varying(255),
-    status character varying(255) NOT NULL,
     ttl integer,
-    message_to character varying(255) NOT NULL
+    message_to character varying(255) NOT NULL,
+    status character varying(255) NOT NULL,
+    failed_message character varying(255)
 );
 
 

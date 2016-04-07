@@ -13,11 +13,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity @Table(name = "t_gcm_outgoing_message")
-public class GcmOutgoingMessage {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+public class GcmOutgoingMessage extends BaseEntity {
+
 
     @NotNull @NotEmpty
     @Column(name="message_to", nullable = false)
@@ -37,13 +34,8 @@ public class GcmOutgoingMessage {
     @Column(nullable = false)
     private GcmMessageStatus status = GcmMessageStatus.NEW;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    @Column(name = "failed_message")
+    private String failedMessage;
 
     public String getTo() {
         return to;
@@ -99,5 +91,13 @@ public class GcmOutgoingMessage {
 
     public void setStatus(GcmMessageStatus status) {
         this.status = status;
+    }
+
+    public String getFailedMessage() {
+        return failedMessage;
+    }
+
+    public void setFailedMessage(String failedMessage) {
+        this.failedMessage = failedMessage;
     }
 }
