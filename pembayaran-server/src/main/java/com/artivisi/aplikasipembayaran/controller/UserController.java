@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/user")
-public class HandphoneController {
+public class UserController {
 
     @Autowired private PembayaranService pembayaranService;
     @Autowired private UserDao userDao;
