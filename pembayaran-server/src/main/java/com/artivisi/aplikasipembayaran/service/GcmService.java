@@ -74,6 +74,7 @@ public class GcmService {
         data.put(action, content);
         try {
             msg.setData(jsonMapper.writeValueAsString(data));
+            gcmOutgoingMessageDao.save(msg);
         } catch (Exception err){
             LOG.warn("Error marshalling data to json", err);
         }
@@ -113,7 +114,7 @@ public class GcmService {
         PageRequest page = new PageRequest(0,1);
         Page<GcmOutgoingMessage> msgs
                 = gcmOutgoingMessageDao
-                .findByStatusOrderByTerakhirUpdateDesc(GcmMessageStatus.NEW, page);
+                .findByStatusOrderByTerakhirUpdate(GcmMessageStatus.NEW, page);
 
 
         LOG.debug("Found {} outgoing GCM message", msgs.getTotalElements());

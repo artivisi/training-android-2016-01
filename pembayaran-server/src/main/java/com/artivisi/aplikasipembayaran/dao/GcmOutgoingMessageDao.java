@@ -13,6 +13,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface GcmOutgoingMessageDao extends PagingAndSortingRepository<GcmOutgoingMessage, String> {
 
-    public Page<GcmOutgoingMessage> findByStatusOrderByTerakhirUpdateDesc(GcmMessageStatus status, Pageable page);
+    public Page<GcmOutgoingMessage> findByStatusOrderByTerakhirUpdate(GcmMessageStatus status, Pageable page);
 
 }
