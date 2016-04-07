@@ -1,8 +1,10 @@
 package com.artivisi.aplikasipembayaran.service;
 
 import com.artivisi.aplikasipembayaran.dao.GcmOutgoingMessageDao;
+import com.artivisi.aplikasipembayaran.dao.HandphoneDao;
 import com.artivisi.aplikasipembayaran.entity.GcmMessageStatus;
 import com.artivisi.aplikasipembayaran.entity.GcmOutgoingMessage;
+import com.artivisi.aplikasipembayaran.entity.Handphone;
 import com.artivisi.aplikasipembayaran.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,8 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,17 +40,73 @@ public class GcmService {
     private static final String GCM_SERVER_URL = "https://gcm-http.googleapis.com/gcm/send";
     private static final String GCM_API_KEY = "AIzaSyCOyIvrPeTlssOCcPNNict4eKSZ0DPF6s8";
 
+    private static final String TOPICS_PRODUK = "/topics/produk";
+    private static final String ACTION_UPDATE = "update";
+    private static final String CONTENT_PRODUK = "produk";
+    private static final String CONTENT_TAGIHAN = "tagihan";
+
     @Autowired private GcmOutgoingMessageDao gcmOutgoingMessageDao;
+    @Autowired private HandphoneDao handphoneDao;
 
 
     public void kirimUpdateProduk(){
-
+        queueMessage(TOPICS_PRODUK, ACTION_UPDATE, CONTENT_PRODUK);
     }
 
     public void kirimUpdateTagihan(User u){
-
+        List<Handphone> handphoneList = handphoneDao.findByUser(u);
+        if(handphoneList != null && !handphoneList.isEmpty()){
+            for (Handphone h : handphoneList) {
+                queueMessage(h.getGcmToken(), ACTION_UPDATE, CONTENT_TAGIHAN);
+            }
+        }
     }
 
+    public void registrasiHandphone(Handphone h){
+        subscribeDeviceKeTopic(h.getGcmToken(), TOPICS_PRODUK);
+    }
+
+    private void queueMessage(String to, String action, String content){
+        GcmOutgoingMessage msg = new GcmOutgoingMessage();
+        msg.setTo(to);
+
+        Map<String, String> data = new HashMap<>();
+        data.put(action, content);
+        try {
+            msg.setData(jsonMapper.writeValueAsString(data));
+        } catch (Exception err){
+            LOG.warn("Error marshalling data to json", err);
+        }
+    }
+
+    private void subscribeDeviceKeTopic(String token, String topic){
+        String url = "https://iid.googleapis.com/iid/v1/";
+        url += token;
+        url += "/rel";
+        url += topic;
+
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        header.add("Authorization", "key=" + GCM_API_KEY);
+
+        HttpEntity<Void> httpEntity = new HttpEntity<>(header);
+
+        LOG.debug("GCM : Subscribe device [{}] to topic [{}]", token, topic);
+
+        ResponseEntity<String> response = gcmServer.exchange(url,
+                HttpMethod.POST,
+                httpEntity, String.class);
+
+        if(HttpStatus.OK.equals(response.getStatusCode())) {
+            LOG.debug("GCM : Success subscribing [{}] to topic [{}]", token, topic);
+        } else {
+            LOG.debug("GCM : Failed subscribing [{}] to topic [{}] " +
+                    "with error code [{}] and error message [{}]",
+                    token, topic, response.getStatusCode(), response.getBody());
+        }
+    }
+
+    @Scheduled(fixedDelay = 5000)
     public void kirimKeGcm(){
         LOG.debug("GCM : Starting GCM Sender");
 
