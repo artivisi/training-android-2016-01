@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
+@RequestMapping(value = "/api/user")
 public class HandphoneController {
 
     @Autowired private PembayaranService pembayaranService;
     @Autowired private UserDao userDao;
 
-    @RequestMapping(value = "/api/user/{username}/handphone", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{username}/handphone", method = RequestMethod.PUT)
     public void updateHandphoneUser(@PathVariable String username,
                                     @RequestBody Map<String, String> data) {
 
