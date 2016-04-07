@@ -150,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                                     .setContentTitle("Aplikasi Pembayaran")
                                     .setContentText("Login Sukses");
+                    mBuilder.setAutoCancel(true);
 
                     Intent intent = new Intent(LoginActivity.this, SecondActivity.class);
                     intent.putExtra("nama", genericResponse.getData().get("fullname").toString());
