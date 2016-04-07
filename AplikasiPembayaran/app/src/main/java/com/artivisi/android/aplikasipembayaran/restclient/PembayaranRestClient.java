@@ -17,18 +17,18 @@ import java.util.HashMap;
  */
 public class PembayaranRestClient {
 
-    private static final String SERVER_URL = "http://192.168.100.18:8080";
+    private String serverUrl = "http://192.168.100.18:8080";
     private RestTemplate restTemplate;
 
-
-    public PembayaranRestClient(){
+    public PembayaranRestClient(String url) {
+        this.serverUrl = url;
         restTemplate = new RestTemplate();
         ((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory())
                 .setConnectTimeout(3 * 1000);
     }
 
     public GenericResponse login(String username, String password) throws GagalLoginException {
-        String url = SERVER_URL + "/api/login";
+        String url = serverUrl + "/api/login";
 
         HashMap<String, String> requestData = new HashMap<>();
         requestData.put("username", username);
@@ -40,5 +40,20 @@ public class PembayaranRestClient {
             throw new GagalLoginException("Server tidak bisa dihubungi");
         }
     }
+
+    public void updateToken(String username, String token) throws GagalLoginException {
+        String url = serverUrl + "/api/user/" + username + "/handphone";
+
+        HashMap<String, String> requestData = new HashMap<>();
+        requestData.put("gcm_token", token);
+
+        try {
+            restTemplate.put(url, requestData);
+        } catch (Exception err){
+            throw new GagalLoginException("Server tidak bisa dihubungi");
+        }
+    }
+
+
 
 }

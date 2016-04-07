@@ -6,4 +6,5 @@
     <string name="title_activity_cek_tagihan">CekTagihanActivity</string>
     <string name="sp_key">com.artivisi.android.aplikasipembayaran</string>
     <string name="sp_key_username">username</string>
+    <string name="sp_key_url">serverUrl</string>
 </resources>

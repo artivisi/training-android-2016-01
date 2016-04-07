@@ -8,10 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,23 +25,11 @@ import com.artivisi.android.aplikasipembayaran.exception.GagalLoginException;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
 import com.artivisi.android.aplikasipembayaran.service.GcmRegistrationIntentService;
 
-import org.springframework.web.client.ResourceAccessException;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 public class LoginActivity extends AppCompatActivity {
 
     private String tag = "LoginActivity";
     Button btn;
-    EditText etUsername, etPassword;
+    EditText etUsername, etPassword, etServerUrl;
 
     @Override
     protected void onStart() {
@@ -90,6 +76,8 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
+        etServerUrl = (EditText) findViewById(R.id.etServerUrl);
+        etServerUrl.setText(getServerUrlFromSharedPref());
 
         btn = (Button) findViewById(R.id.btnLogin);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -98,70 +86,34 @@ public class LoginActivity extends AppCompatActivity {
 
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
-//                login(username, password);
+                String serverUrl = etServerUrl.getText().toString();
 
-                try {
-                    FileOutputStream fos = openFileOutput("halo.txt", Context.MODE_PRIVATE);
-                    Log.i("writing files : ", "halo.txt");
-                    fos.write("ini dari aplikasi pembayaran".getBytes());
-                    fos.close();
-
-                    //cara baca file internal storage
-                    FileInputStream fis = openFileInput("halo.txt");
-
-                    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-                    String strLine;
-                    while ((strLine = br.readLine()) != null) {
-                        Log.i("reading file : ", strLine);
-                    }
-                    fis.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //write to external storage
-                File file = new File(getExternalFilesDir(""),
-                        "aplikasiPembayaran.txt");
-                try {
-                    if (!file.createNewFile()) {
-                        Log.e("error", "Directory not created");
-                        FileOutputStream f = new FileOutputStream(file);
-                        f.write("Halo".getBytes());
-                        f.flush();
-                        f.close();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                login(username, password, serverUrl);
             }
         });
 
-        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-        startService(intent);
     }
 
-    public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+    private String getServerUrlFromSharedPref() {
+        SharedPreferences sp =
+                getSharedPreferences(getString(R.string.sp_key),
+                        Context.MODE_PRIVATE);
+
+        String serverUrlSP = sp.getString(getString(R.string.sp_key_url), "http://192.168.1.1");
+        return serverUrlSP;
     }
 
-    /* Checks if external storage is available to at least read */
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+    private void updateServerUrlInSharedPref(String url) {
+        SharedPreferences sp =
+                getSharedPreferences(getString(R.string.sp_key),
+                        Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(getString(R.string.sp_key_url), url);
+        editor.commit();
     }
 
-    private void login(String username, String password){
+    private void login(final String username, String password, final String serverUrl){
 
         new AsyncTask<String, Void, GenericResponse>(){
 
@@ -178,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             protected GenericResponse doInBackground(String... params) {
-                PembayaranRestClient client = new PembayaranRestClient();
+                PembayaranRestClient client = new PembayaranRestClient(serverUrl);
 
                 try {
                     GenericResponse hasil = client.login(params[0], params[1]);
@@ -212,23 +164,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 if(genericResponse.isSuccess()){
-                    SharedPreferences sp =
-                            getSharedPreferences(getString(R.string.sp_key),
-                                    Context.MODE_PRIVATE);
-
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(getString(R.string.sp_key_username), "jimmy");
-                    editor.commit();
-                    Log.i(tag, "writing to shared preference");
-
-                    String usernameSP = sp.getString("password", "tidak ada value");
-                    Log.i(tag, "username " + usernameSP);
-
-                    SharedPreferences.Editor editor1 = sp.edit();
-                    editor1.remove(getString(R.string.sp_key_username));
-                    // atau hapus semua
-                    editor1.clear();
-                    editor1.commit();
+                    updateServerUrlInSharedPref(serverUrl);
 
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(LoginActivity.this)
@@ -258,6 +194,12 @@ public class LoginActivity extends AppCompatActivity {
                     int idNotifikasi = 100;
                     mNotificationManager.notify(idNotifikasi, mBuilder.build());
 
+                    intent = new Intent(LoginActivity.this, GcmRegistrationIntentService.class);
+                    intent.putExtra("username", username);
+                    intent.putExtra("serverUrl", serverUrl);
+                    startService(intent);
+
+
                 } else {
                     Toast.makeText(LoginActivity.this,
                             genericResponse.getData()
@@ -271,7 +213,6 @@ public class LoginActivity extends AppCompatActivity {
         }.execute(username, password);
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
