@@ -1,9 +1,14 @@
 package com.artivisi.android.aplikasipembayaran;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -140,11 +145,33 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 if(genericResponse.isSuccess()){
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(LoginActivity.this)
+                                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                                    .setContentTitle("Aplikasi Pembayaran")
+                                    .setContentText("Login Sukses");
+
                     Intent intent = new Intent(LoginActivity.this, SecondActivity.class);
                     intent.putExtra("nama", genericResponse.getData().get("fullname").toString());
                     intent.putExtra("email", genericResponse.getData().get("email").toString());
 
-                    startActivity(intent);
+                    //startActivity(intent);
+
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(LoginActivity.this);
+                    stackBuilder.addNextIntent(intent);
+                    PendingIntent resultPendingIntent =
+                            stackBuilder.getPendingIntent(
+                                    0,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                            );
+                    stackBuilder.addNextIntent(intent);
+                    mBuilder.setContentIntent(resultPendingIntent);
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    int idNotifikasi = 100;
+                    mNotificationManager.notify(idNotifikasi, mBuilder.build());
+
                 } else {
                     Toast.makeText(LoginActivity.this,
                             genericResponse.getData()

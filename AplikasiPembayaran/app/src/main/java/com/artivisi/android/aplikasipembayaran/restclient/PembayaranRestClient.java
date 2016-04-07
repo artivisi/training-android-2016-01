@@ -17,7 +17,7 @@ import java.util.HashMap;
  */
 public class PembayaranRestClient {
 
-    private static final String SERVER_URL = "http://192.168.100.3:8080";
+    private static final String SERVER_URL = "http://192.168.100.18:8080";
     private RestTemplate restTemplate;
 
 
