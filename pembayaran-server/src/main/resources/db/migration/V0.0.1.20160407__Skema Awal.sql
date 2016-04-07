@@ -64,6 +64,24 @@ CREATE TABLE m_user_password (
 ALTER TABLE m_user_password OWNER TO pembayaran;
 
 --
+-- Name: t_gcm_outgoing_message; Type: TABLE; Schema: public; Owner: pembayaran
+--
+
+CREATE TABLE t_gcm_outgoing_message (
+    id character varying(255) NOT NULL,
+    collapse_key character varying(255),
+    data character varying(255),
+    gcm_id character varying(255),
+    notification character varying(255),
+    status character varying(255) NOT NULL,
+    ttl integer,
+    message_to character varying(255) NOT NULL
+);
+
+
+ALTER TABLE t_gcm_outgoing_message OWNER TO pembayaran;
+
+--
 -- Name: t_pembayaran; Type: TABLE; Schema: public; Owner: pembayaran
 --
 
@@ -133,6 +151,14 @@ ALTER TABLE ONLY m_user_password
 
 ALTER TABLE ONLY m_user
     ADD CONSTRAINT m_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: t_gcm_outgoing_message_pkey; Type: CONSTRAINT; Schema: public; Owner: pembayaran
+--
+
+ALTER TABLE ONLY t_gcm_outgoing_message
+    ADD CONSTRAINT t_gcm_outgoing_message_pkey PRIMARY KEY (id);
 
 
 --
