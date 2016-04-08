@@ -27,9 +27,7 @@ public class PembayaranRestClient {
     private RestTemplate restTemplate;
 
     public PembayaranRestClient(String url) {
-        if(url != null) {
-            this.serverUrl = url;
-        }
+        this.serverUrl = url;
         restTemplate = new RestTemplate();
         ((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory())
                 .setConnectTimeout(3 * 1000);

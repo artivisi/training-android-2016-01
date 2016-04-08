@@ -1,9 +1,12 @@
 package com.artivisi.android.aplikasipembayaran.service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.artivisi.android.aplikasipembayaran.R;
 import com.artivisi.android.aplikasipembayaran.dto.PageProduk;
 import com.artivisi.android.aplikasipembayaran.dto.Produk;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
@@ -30,13 +33,22 @@ public class MyGcmListenerService extends GcmListenerService {
         }
     }
 
+    private String getServerUrlFromSharedPref() {
+        SharedPreferences sp =
+                getSharedPreferences(getString(R.string.sp_key),
+                        Context.MODE_PRIVATE);
+
+        String serverUrlSP = sp.getString(getString(R.string.sp_key_url), "http://192.168.1.1");
+        return serverUrlSP;
+    }
+
     private void getProduk() {
         new AsyncTask<Void, Void, PageProduk>(){
 
             @Override
             protected PageProduk doInBackground(Void... voids) {
                 PembayaranRestClient client = new PembayaranRestClient
-                        (null);
+                        (getServerUrlFromSharedPref());
                 try {
                     return client.getSemuaProduk();
                 } catch (Exception e) {
