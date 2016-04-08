@@ -69,6 +69,7 @@ public class PembayaranRestClient {
             ResponseEntity<PageProduk> p =  restTemplate.getForEntity(url, PageProduk.class, new Object[]{});
             return p.getBody();
         } catch (Exception err){
+            Log.e("rest ", err.getMessage());
             throw new GagalLoginException("Server : " + url + " tidak bisa dihubungi");
         }
     }

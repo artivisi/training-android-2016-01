@@ -10,7 +10,7 @@ public class Produk {
     private String id;
     private String kode;
     private String nama;
-    private Date terakhirUpdate = new Date();
+    private Long terakhirUpdate;
 
     public String getId() {
         return id;
@@ -36,11 +36,11 @@ public class Produk {
         this.nama = nama;
     }
 
-    public Date getTerakhirUpdate() {
+    public Long getTerakhirUpdate() {
         return terakhirUpdate;
     }
 
-    public void setTerakhirUpdate(Date terakhirUpdate) {
+    public void setTerakhirUpdate(Long terakhirUpdate) {
         this.terakhirUpdate = terakhirUpdate;
     }
 }
