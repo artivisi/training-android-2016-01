@@ -9,6 +9,7 @@ import com.artivisi.android.aplikasipembayaran.dto.Produk;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
 import com.google.android.gms.gcm.GcmListenerService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class MyGcmListenerService extends GcmListenerService {
             @Override
             protected PageProduk doInBackground(Void... voids) {
                 PembayaranRestClient client = new PembayaranRestClient
-                        ("http://192.168.100.5:8080/");
+                        (null);
                 try {
                     return client.getSemuaProduk();
                 } catch (Exception e) {
@@ -50,10 +51,28 @@ public class MyGcmListenerService extends GcmListenerService {
                 Log.i(TAG, "Update Berhasil");
 
                 if(pageProduk != null) {
-                    list = pageProduk.getContents();
+                    list = pageProduk.getContent();
                     Log.i("produk", "" + pageProduk.getNumberOfElements());
+                    Log.i("size ", "" + pageProduk.getContent().size());
+
+                    insertIntoDb(pageProduk.getContent());
                 }
             }
         }.execute();
+    }
+
+    private void insertIntoDb(List<Produk> list) {
+        SimpleDateFormat fulltime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        AppDB db = new AppDB(this.getApplicationContext());
+        db.open();
+        for (Produk p : list) {
+            db.insertProduk(
+                    p.getId(),
+                    p.getKode(),
+                    p.getNama(),
+                    fulltime.format(p.getTerakhirUpdate()));
+        }
+        db.close();
     }
 }

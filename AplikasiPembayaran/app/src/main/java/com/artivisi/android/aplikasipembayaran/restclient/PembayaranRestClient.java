@@ -23,11 +23,13 @@ import java.util.List;
  */
 public class PembayaranRestClient {
 
-    private String serverUrl = "http://192.168.100.18:8080";
+    private String serverUrl = "http://192.168.100.5:8080";
     private RestTemplate restTemplate;
 
     public PembayaranRestClient(String url) {
-        this.serverUrl = url;
+        if(url != null) {
+            this.serverUrl = url;
+        }
         restTemplate = new RestTemplate();
         ((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory())
                 .setConnectTimeout(3 * 1000);
@@ -65,13 +67,9 @@ public class PembayaranRestClient {
 
         try {
             ResponseEntity<PageProduk> p =  restTemplate.getForEntity(url, PageProduk.class, new Object[]{});
-            if(p.getStatusCode().equals(200)) {
-                return p.getBody();
-            } else {
-                throw new GagalLoginException("Error" + p.getStatusCode());
-            }
+            return p.getBody();
         } catch (Exception err){
-            throw new GagalLoginException("Server tidak bisa dihubungi");
+            throw new GagalLoginException("Server : " + url + " tidak bisa dihubungi");
         }
     }
 

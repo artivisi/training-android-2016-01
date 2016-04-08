@@ -60,16 +60,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        AppDB db = new AppDB(getApplicationContext());
-        db.open();
-        db.insertProduk(String.valueOf(new Random().nextInt()), "kode1", "nama1", "2016-04-08");
-        Cursor c = db.getAllProduk();
-        if (c.moveToFirst()){
-            do{
-                Log.i("produk : ", c.getString(0));
-            }while (c.moveToNext());
-        }
-        db.close();
     }
 
     private String getServerUrlFromSharedPref() {

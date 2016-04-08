@@ -14,7 +14,7 @@ public class PageProduk {
     private boolean first;
     private int size;
     private int number;
-    private List<Produk> contents;
+    private List<Produk> content;
 
     public long getTotalElements() {
         return totalElements;
@@ -72,11 +72,11 @@ public class PageProduk {
         this.number = number;
     }
 
-    public List<Produk> getContents() {
-        return contents;
+    public List<Produk> getContent() {
+        return content;
     }
 
-    public void setContents(List<Produk> contents) {
-        this.contents = contents;
+    public void setContent(List<Produk> content) {
+        this.content = content;
     }
 }
