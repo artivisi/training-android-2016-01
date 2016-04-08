@@ -70,4 +70,8 @@ public class PembayaranService {
     public Page<Produk> semuaProduk(Pageable page) {
         return produkDao.findAll(page);
     }
+
+    public Long countAllProduk() {
+        return produkDao.count();
+    }
 }

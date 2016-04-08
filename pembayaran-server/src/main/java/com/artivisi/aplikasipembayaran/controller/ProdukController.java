@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.PageRequest;
 
 import javax.validation.Valid;
 
@@ -28,7 +29,10 @@ public class ProdukController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public Page<Produk> semuaProduk(Pageable page){
+    public Page<Produk> semuaProduk(){
+        Long countAll = pembayaranService.countAllProduk();
+        PageRequest page = new PageRequest(0, countAll.intValue());
+
         return pembayaranService.semuaProduk(page);
     }
 }

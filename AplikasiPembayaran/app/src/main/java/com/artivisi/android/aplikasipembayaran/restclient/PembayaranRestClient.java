@@ -3,14 +3,20 @@ package com.artivisi.android.aplikasipembayaran.restclient;
 import android.util.Log;
 
 import com.artivisi.android.aplikasipembayaran.dto.GenericResponse;
+import com.artivisi.android.aplikasipembayaran.dto.PageProduk;
+import com.artivisi.android.aplikasipembayaran.dto.Produk;
 import com.artivisi.android.aplikasipembayaran.exception.GagalLoginException;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by endymuhardin on 4/6/16.
@@ -54,6 +60,19 @@ public class PembayaranRestClient {
         }
     }
 
+    public PageProduk getSemuaProduk() throws GagalLoginException {
+        String url = serverUrl + "/api/produk/";
 
+        try {
+            ResponseEntity<PageProduk> p =  restTemplate.getForEntity(url, PageProduk.class, new Object[]{});
+            if(p.getStatusCode().equals(200)) {
+                return p.getBody();
+            } else {
+                throw new GagalLoginException("Error" + p.getStatusCode());
+            }
+        } catch (Exception err){
+            throw new GagalLoginException("Server tidak bisa dihubungi");
+        }
+    }
 
 }

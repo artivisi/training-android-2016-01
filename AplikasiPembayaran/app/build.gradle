@@ -34,5 +34,5 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.BUILD-SNAPSHOT'
     compile 'com.google.code.gson:gson:2.6.2'
-    compile "com.google.android.gms:play-services-gcm:8.3.0"
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
 }

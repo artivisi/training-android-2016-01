@@ -132,6 +132,7 @@ public class GcmService {
             LOG.debug("GCM : Sent message [{}] successfully", msg.getId());
         } catch (Exception err){
             LOG.warn("Error processing GCM Outgoing [{}]", msg.getId());
+            err.printStackTrace();
             msg.setStatus(GcmMessageStatus.FAILED);
             LOG.debug("GCM : Fail to send message [{}]", msg.getId());
         }
@@ -153,24 +154,32 @@ public class GcmService {
                 httpEntity,
                 Map.class);
 
-        Map<String, Object> responseData = response.getBody();
-
-        List<Map<String, Object>> results = (List<Map<String, Object>>) responseData.get("results");
-        LOG.debug("GCM : Receive {} results", results.size());
-
-        if(results !=  null && !results.isEmpty()){
-            Map<String, Object> msgResp = results.get(0);
-            String gcmId = (String) msgResp.get("message_id");
+        if(response.getStatusCode().equals(HttpStatus.OK)) {
+            Map<String, Object> responseData = response.getBody();
+            String gcmId = (String) responseData.get("message_id");
             if(gcmId != null && !gcmId.isEmpty()) {
                 gcmMsg.setGcmId(gcmId);
             }
+        } else {
+            Map<String, Object> responseData = response.getBody();
 
-            String error = (String) msgResp.get("error");
-            if(error != null && !error.isEmpty()){
-                gcmMsg.setStatus(GcmMessageStatus.FAILED);
-                gcmMsg.setFailedMessage(error);
-            } else {
-                gcmMsg.setStatus(GcmMessageStatus.SENT);
+            List<Map<String, Object>> results = (List<Map<String, Object>>) responseData.get("results");
+
+            if(results !=  null && !results.isEmpty()){
+                LOG.debug("GCM : Receive {} results", results.size());
+                Map<String, Object> msgResp = results.get(0);
+                String gcmId = (String) msgResp.get("message_id");
+                if(gcmId != null && !gcmId.isEmpty()) {
+                    gcmMsg.setGcmId(gcmId);
+                }
+
+                String error = (String) msgResp.get("error");
+                if(error != null && !error.isEmpty()){
+                    gcmMsg.setStatus(GcmMessageStatus.FAILED);
+                    gcmMsg.setFailedMessage(error);
+                } else {
+                    gcmMsg.setStatus(GcmMessageStatus.SENT);
+                }
             }
         }
     }

@@ -46,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         listView = (ListView) findViewById(R.id.left_drawer);
 
-        // set a custom shadow that overlays the main content when the drawer opens
-//        drawerLayout.setDrawerShadow(R.drawable.menu, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
         listView.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, menus));
         listView.setOnItemClickListener(new DrawerItemClickListener());
@@ -56,16 +53,13 @@ public class MainActivity extends AppCompatActivity {
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-//        getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.);
 
-        // ActionBarDrawerToggle ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
         drawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                R.drawable.menu,  /* nav drawer image to replace 'Up' caret */
-                R.string.app_name,  /* "open drawer" description for accessibility */
-                R.string.app_name  /* "close drawer" description for accessibility */
+                this,
+                drawerLayout,
+                R.drawable.menu,
+                R.string.app_name,
+                R.string.app_name
         ) {
             public void onDrawerClosed(View view) {
 
@@ -95,47 +89,35 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
     }
 
     private class DrawerItemClickListener implements AdapterView.OnItemClickListener {
-
-
-
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
             switch(position) {
                 case 0:
-//                    Toast.makeText(getApplicationContext(), "menu 1", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, dashboardFragment);
                     break;
                 case 1:
-//                    Toast.makeText(getApplicationContext(), "menu 2", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, bayarFragment);
                     break;
                 case 2:
-//                    Toast.makeText(getApplicationContext(), "menu 3", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, favoritFragment);
                     break;
                 case 3:
-//                    Toast.makeText(getApplicationContext(), "menu 3", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, historiTransaksiFragment);
                     break;
                 case 4:
-//                    Toast.makeText(getApplicationContext(), "menu 3", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, mutasiSaldoFragment);
                     break;
                 case 5:
-//                    Toast.makeText(getApplicationContext(), "menu 3", Toast.LENGTH_SHORT).show();
                     fragmentTransaction.replace(R.id.content_frame, pengaturanFragment);
                     break;
                 case 6:

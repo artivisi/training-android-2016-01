@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -23,49 +24,16 @@ import android.widget.Toast;
 import com.artivisi.android.aplikasipembayaran.dto.GenericResponse;
 import com.artivisi.android.aplikasipembayaran.exception.GagalLoginException;
 import com.artivisi.android.aplikasipembayaran.restclient.PembayaranRestClient;
+import com.artivisi.android.aplikasipembayaran.service.AppDB;
 import com.artivisi.android.aplikasipembayaran.service.GcmRegistrationIntentService;
+
+import java.util.Random;
 
 public class LoginActivity extends AppCompatActivity {
 
     private String tag = "LoginActivity";
     Button btn;
     EditText etUsername, etPassword, etServerUrl;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i(tag, "on start");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.i(tag, "on restart");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(tag, "on Destroy");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(tag, "on stop");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.i(tag, "on pause");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(tag, "on resume");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +60,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        AppDB db = new AppDB(getApplicationContext());
+        db.open();
+        db.insertProduk(String.valueOf(new Random().nextInt()), "kode1", "nama1", "2016-04-08");
+        Cursor c = db.getAllProduk();
+        if (c.moveToFirst()){
+            do{
+                Log.i("produk : ", c.getString(0));
+            }while (c.moveToNext());
+        }
+        db.close();
     }
 
     private String getServerUrlFromSharedPref() {
@@ -162,44 +140,18 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 if(genericResponse.isSuccess()){
                     updateServerUrlInSharedPref(serverUrl);
 
-                    NotificationCompat.Builder mBuilder =
-                            new NotificationCompat.Builder(LoginActivity.this)
-                                    .setSmallIcon(android.R.drawable.ic_dialog_info)
-                                    .setContentTitle("Aplikasi Pembayaran")
-                                    .setContentText("Login Sukses");
-                    mBuilder.setAutoCancel(true);
+                    Intent gcmRegServiceIntent = new Intent(LoginActivity.this, GcmRegistrationIntentService.class);
+                    gcmRegServiceIntent.putExtra("username", username);
+                    gcmRegServiceIntent.putExtra("serverUrl", serverUrl);
+                    startService(gcmRegServiceIntent);
 
                     Intent intent = new Intent(LoginActivity.this, SecondActivity.class);
                     intent.putExtra("nama", genericResponse.getData().get("fullname").toString());
                     intent.putExtra("email", genericResponse.getData().get("email").toString());
-
-                    //startActivity(intent);
-
-                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(LoginActivity.this);
-                    stackBuilder.addNextIntent(intent);
-                    PendingIntent resultPendingIntent =
-                            stackBuilder.getPendingIntent(
-                                    0,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
-                            );
-                    stackBuilder.addNextIntent(intent);
-                    mBuilder.setContentIntent(resultPendingIntent);
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                    int idNotifikasi = 100;
-                    mNotificationManager.notify(idNotifikasi, mBuilder.build());
-
-                    intent = new Intent(LoginActivity.this, GcmRegistrationIntentService.class);
-                    intent.putExtra("username", username);
-                    intent.putExtra("serverUrl", serverUrl);
-                    startService(intent);
-
-
+                    startActivity(intent);
                 } else {
                     Toast.makeText(LoginActivity.this,
                             genericResponse.getData()
@@ -216,22 +168,16 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
