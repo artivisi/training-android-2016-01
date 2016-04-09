@@ -27,7 +27,7 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle data) {
         Log.i(TAG, "From : " + from);
         if(from.startsWith("/topics/produk")) {
-            Log.i(TAG, "Isi : "+data.getString("update"));
+            Log.i(TAG, "Isi : " + data.getString("update"));
 
             getProduk();
         }
@@ -67,7 +67,7 @@ public class MyGcmListenerService extends GcmListenerService {
                     Log.i("produk", "" + pageProduk.getNumberOfElements());
                     Log.i("size ", "" + pageProduk.getContent().size());
 
-                    insertIntoDb(pageProduk.getContent());
+                    insertIntoDb(list);
                 }
             }
         }.execute();

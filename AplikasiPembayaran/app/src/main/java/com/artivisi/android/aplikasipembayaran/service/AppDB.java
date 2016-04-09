@@ -92,5 +92,4 @@ public class AppDB {
                         kolomNamaProduk,
                         kolomLastUpdateProduk}, null, null, null, null, null);
     }
-
 }
