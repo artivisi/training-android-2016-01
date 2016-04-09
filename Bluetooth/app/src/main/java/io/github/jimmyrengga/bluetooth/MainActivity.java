@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -63,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        IntentFilter filter = new IntentFilter();
+
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+
+        registerReceiver(mReceiver, filter);
     }
 
     private void createBond(BluetoothDevice device) throws Exception {
@@ -129,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (state == BluetoothAdapter.STATE_ON) {
                 } else if (state == BluetoothAdapter.STATE_OFF) {
+
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 mDeviceList = new ArrayList<BluetoothDevice>();
