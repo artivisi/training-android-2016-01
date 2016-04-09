@@ -1,7 +1,9 @@
 package io.github.jimmyrengga.gps;
 
+import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,11 +23,16 @@ public class GpsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 gpsHandler = new GpsHandler(GpsActivity.this);
+                Location location = gpsHandler.getLocation();
                 if(gpsHandler.isCanGetLocation()) {
-                    Toast.makeText(getApplicationContext(),
-                            "Lokasi anda latitude: " + gpsHandler.getLatitude() +
-                                    ", longitude: "+ gpsHandler.getLongitude(),
-                            Toast.LENGTH_SHORT).show();
+                    if(location != null) {
+                        Toast.makeText(getApplicationContext(),
+                                "Lokasi anda latitude: " + gpsHandler.getLatitude() +
+                                        ", longitude: "+ gpsHandler.getLongitude(),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i("GPS", "getLocation is null");
+                    }
                 } else {
                     gpsHandler.showSettingsAlert();
                 }

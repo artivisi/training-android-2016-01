@@ -9,12 +9,14 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 /**
  * Created by jimmy on 09/04/16.
@@ -39,10 +41,8 @@ public class GpsHandler extends Service implements LocationListener {
         return canGetLocation;
     }
 
-
     public GpsHandler(Context ctx) {
         this._ctx = ctx;
-        getLocation();
     }
 
     public double getLongitude() {
@@ -53,8 +53,16 @@ public class GpsHandler extends Service implements LocationListener {
         return latitude;
     }
 
-    private Location getLocation() {
+    public Location getLocation() {
         try {
+//            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+//                        && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    Log.i("gps", "tidak mendapatkan akses");
+//                    return null;
+//                }
+//            }
+
             locationManager = (LocationManager) _ctx
                     .getSystemService(LOCATION_SERVICE);
             // cek GPS status
@@ -71,7 +79,6 @@ public class GpsHandler extends Service implements LocationListener {
                 // cek apakah koneksi internet bisa ?
                 if (isNetworkEnable) {
                     // ambil posisi berdasarkan Network
-
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_WAKTU_GPS_UPDATE,
                             MIN_JARAK_GPS_UPDATE, this);
@@ -79,6 +86,10 @@ public class GpsHandler extends Service implements LocationListener {
                         // ambil posisi terakhir user menggunakan Network
                         location = locationManager.getLastKnownLocation(LocationManager
                                 .NETWORK_PROVIDER);
+
+                        if(location != null) {
+                            Log.i("getting location : ", location.getProvider());
+                        }
                         // jika lokasi berhasil didapat
                         if (location != null) {
                             // ambil latitude
@@ -102,6 +113,7 @@ public class GpsHandler extends Service implements LocationListener {
                             // dapatkan posisi terakhir user menggunakan GPS
                             location = locationManager.getLastKnownLocation(LocationManager
                                     .GPS_PROVIDER);
+                            Log.i("getting location2 : ", location.getProvider());
                             // jika lokasi berhasil didapat
                             if (location != null)
                             {
